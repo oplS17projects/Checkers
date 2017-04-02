@@ -22,39 +22,19 @@ The idea here is to identify what ideas from the class you will use in carrying 
 **Your project will be graded, in part, by the extent to which you adopt approaches from the course into your implementation, _and_ your discussion about this.**
 
 ### External Technologies
-You are encouraged to develop a project that connects to external systems. For example, this includes systems that:
-
-- retrieve information or publish data to the web
-- generate or process sound
-- control robots or other physical systems
-- interact with databases
-
-If your project will do anything in this category (not only the things listed above!), include this section and discuss.
+We will use Open XML format files (.xlsx file, the format that MS Excel saves spreadsheets in) to store data about the state of the game board. The simple-xlsx library will be used to get information in and out of these files.
 
 ### Data Sets or other Source Materials
-If you will be working with existing data, where will you get those data from? (Dowload from a website? Access in a database? Create in a simulation you will build? ...)
-
-How will you convert your data into a form usable for your project?  
-
-If you are pulling data from somewhere, actually go download it and look at it before writing the proposal. Explain in some detail what your plan is for accomplishing the necessary processing.
-
-If you are using some other starting materials, explain what they are. Basically: anything you plan to use that isn't code.
+We will not need to make use of data from any external source. We will, however, be creating some of our own data sets to test our program with. Specifically, we will create .xlsx files with data representing sample game configurations and make sure our program can properly parse and incorporate the data.
 
 ### Deliverable and Demonstration
-Explain exactly what you'll have at the end. What will it be able to do at the live demo?
-
-What exactly will you produce at the end of the project? A piece of software, yes, but what will it do? Here are some questions to think about (and answer depending on your application).
-
-Will it run on some data, like batch mode? Will you present some analytical results of the processing? How can it be re-run on different source data?
-
-Will it be interactive? Can you show it working? This project involves a live demo, so interactivity is good.
+The ultimate goal is to create a fully interactive game of Checkers. The game will not have an AI, but will be designed to be played by two users in alternating turns. At the live demo we will demonstrate playing the game. We will also be able to demonstrate saving and loading various instances of the game.
 
 ### Evaluation of Results
-How will you know if you are successful? 
-If you include some kind of _quantitative analysis,_ that would be good.
+The ability to save and load game states is not only convenient for users but is also a perfect mechanism for testing that the program is working properly since it provides the ability to essentially print out (in a file) the internal state of the board. This makes it easy to check that the program does as expected after each user input. The state written to the file should also match up with the visual of the board within DrRacket. As long as these elements consistently match up, we will know that the program works correctly.
 
 ## Architecture Diagram
-Upload the architecture diagram you made for your slide presentation to your repository, and include it in-line here.
+![Diagram](/fp4-architecture-diagram.png?raw=true)
 
 Create several paragraphs of narrative to explain the pieces and how they interoperate.
 
