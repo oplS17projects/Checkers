@@ -61,6 +61,8 @@ The basic mechanics for piece movement and piece capture will be implemented.
 ### Public Presentation
 Score keeping and the “king" pieces will be implemented. Game will end when one player has no pieces remaining.
 
+## Group Responsibilities
+
 ### Alexander Pilozzi @PRXela
 -Inputting and exporting data to xlsx file
 -Interpreting user input  
