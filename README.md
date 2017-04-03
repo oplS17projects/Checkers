@@ -10,19 +10,19 @@ Our hope is that through this project we will learn how to make a dynamic, inter
 ### Analysis
 Concepts from class that will be used in the project:
 
-- Recursion
+- Recursion: 
 We will use recursion in part to process that data given by the XML files and generate the list of tile objects. Checking the validity of moves will also require recursing through the tiles of the board.
 
-- Map/filter/reduce
+- Map/filter/reduce: 
 Will likely need to filter the game board (i.e. list of tile objects) for ones containing the player’s pieces, etc.
 
-- Object Orientation
+- Object Orientation: 
 We will use object orientation for the internal representation of the game. The individual tiles of the checkerboard will be represented as objects that contain their position and state data. The board itself will also be an object, containing the list of tiles as well as other information (pieces remaining on each side, etc.).
 
-- State Modification
+- State Modification: 
 State modification will be used within the tile and board objects. The status of each tile (empty/occupied, piece color, etc) will be changed via state modification when players move pieces and the state of certain components of the board, such as the number of pieces each player has, will change as well.
 
-- Expression Evaluator
+- Expression Evaluator: 
 As user input comes from the keyboard, we will need to build an expression evaluator to parse the user's input. It will need to identify the command (save/load/move) and its arguments from the user’s input expression. So the user could input something like (move (B6 C5)) and the code will need to extract the two tile locations and check if the user whose turn it is has a piece on B6 and that it can legally move to C5.
 
 ### External Technologies
@@ -62,12 +62,12 @@ Score keeping and the “king" pieces will be implemented. Game will end when on
 ## Group Responsibilities
 
 ### Alexander Pilozzi @PRXela
--Inputting and exporting data to xlsx file
--Interpreting user input
+- Inputting and exporting data to xlsx file
+- Interpreting user input
 
 ### Michael Bertucci @mbertucci1
--Representing the game board object and drawing it on screen
--Representing tile objects and maintaining/updating their states based on user moves
+- Representing the game board object and drawing it on screen
+- Representing tile objects and maintaining/updating their states based on user moves
 
 ### Both Responsible For
--Implementing the rules of the game and making sure user input and resulting changes in state are in accordance with the rules
+- Implementing the rules of the game and making sure user input and resulting changes in state are in accordance with the rules
