@@ -1,32 +1,29 @@
 # Checkers
 
 ### Statement
-The project is an interactive, two player game of checkers.
-Why is it interesting? Why is it interesting to you personally? What do you hope to learn? 
+The project is an interactive, two player game of checkers. 
+
+We were interested in making something with a graphical representation that would update dynamically as its internal state changed. While trying to decide how to add interactivity to this idea, we decided upon making a Checkers game. In this context the board is the graphic that changes in response to state, which in turn changes in response to user input.
+
+Our hope is that through this project we will learn how to make a dynamic, interactive system using the functional programming perspective required by Racket.
 
 ### Analysis
-Explain what approaches from class you will bring to bear on the project.
+Concepts from class that will be used in the project:
 
-Be explicit about the techiques from the class that you will use. For example:
+- Recursion
+We will use recursion in part to process that data given by the XML files and generate the list of tile objects. Checking the validity of moves will also require recursing through the tiles of the board.
 
-- Will you use data abstraction? How?
+- Map/filter/reduce
+Will likely need to filter the game board (i.e. list of tile objects) for ones containing the player’s pieces, etc.
 
-We will use recursion in part to process that data given by the XML files and generate the list of tile objects.
+- Object Orientation
+We will use object orientation for the internal representation of the game. The individual tiles of the checkerboard will be represented as objects that contain their position and state data. The board itself will also be an object, containing the list of tiles as well as other information (pieces remaining on each side, etc.).
 
-- Will you use map/filter/reduce? How?
+- State Modification
+State modification will be used within the tile and board objects. The status of each tile (empty/occupied, piece color, etc) will be changed via state modification when players move pieces and the state of certain components of the board, such as the number of pieces each player has, will change as well.
 
-We will use object orientation for the internal representation of the game. The individual tiles of the checkerboard will be represented as objects that contain their position and state data. The board itself will also be an object, containing the list of tiles as well as other information (score, etc.).
-
-- Will you use functional approaches to processing your data? How?
-
-State modification will be used within the tile and board objects. The status of each tile (empty/occupied piece color, etc) will be changed via state modification when players move pieces and the state of certain components of the board, such as the number of pieces each player has will change as well.
-
-- Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
-- Will you use lazy evaluation approaches?
-
-The idea here is to identify what ideas from the class you will use in carrying out your project. 
-
-**Your project will be graded, in part, by the extent to which you adopt approaches from the course into your implementation, _and_ your discussion about this.**
+- Expression Evaluator
+As user input comes from the keyboard, we will need to build an expression evaluator to parse the user's input. It will need to identify the command (save/load/move) and its arguments from the user’s input expression. So the user could input something like (move (B6 C5)) and the code will need to extract the two tile locations and check if the user whose turn it is has a piece on B6 and that it can legally move to C5.
 
 ### External Technologies
 We will use Open XML format files (.xlsx file, the format that MS Excel saves spreadsheets in) to store data about the state of the game board. The simple-xlsx library will be used to get information in and out of these files.
@@ -45,11 +42,12 @@ The ability to save and load game states is not only convenient for users but is
     
 The game board is represented internally by a list of 64 tile objects within an overarching board object. Each tile contains information on its position and current state (empty/red or black piece, etc).
 
-The player makes a move by first choosing a given piece under his/her control and a desired destination tile. When the player issues the move command, the tile is checked against the list of tiles to determine if the move is valid by checking that the tile is empty and is either adjacent, or has an opponent’s piece in the preceding tile.
+At the start of the game and whenever a move is made, the board is drawn on-screen in accordance with the data contained in the tile objects. Each tile is drawn in its given position, and if its state specifies it has a piece on it then the graphic is overlayed with a circle of the specified color.
 
-At the start of the game or when a move is made, the board is drawn in accordance with the data contained in the tile objects. An image is drawn on the board corresponding to the state of the tile and the location of the tile.
+The player makes a move by first choosing a given piece under his/her control and a desired destination tile. When the player issues the move command, the tile is checked against the list of tiles to determine if the move is valid (e.g. the destination tile is not already occupied by a piece, the destination can be reached by moving on diagonals, etc.).
 
-At any point during the game, the players can opt to save the game. This exports the data from each tile object to the corresponding data cell of an xlsx file. This data can then be loaded, setting the states of the tiles based on the data contained in the xlsx file.
+At any point during the game, the players can issue a command to save the game. This exports the data from each tile object to the corresponding data cell of an xlsx file. This data can then be loaded, setting the states of the tiles based on the data contained in the xlsx file.
+
 ## Schedule
 
 ### First Milestone
@@ -65,4 +63,11 @@ Score keeping and the “king" pieces will be implemented. Game will end when on
 
 ### Alexander Pilozzi @PRXela
 -Inputting and exporting data to xlsx file
--Interpreting user input  
+-Interpreting user input
+
+### Michael Bertucci @mbertucci1
+-Representing the game board object and drawing it on screen
+-Representing tile objects and maintaining/updating their states based on user moves
+
+### Both Responsible For
+-Implementing the rules of the game and making sure user input and resulting changes in state are in accordance with the rules
