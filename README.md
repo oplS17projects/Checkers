@@ -1,7 +1,8 @@
 # Checkers
 
 ### Statement
-Describe your project. Why is it interesting? Why is it interesting to you personally? What do you hope to learn? 
+The project is an interactive, two player game of checkers.
+Why is it interesting? Why is it interesting to you personally? What do you hope to learn? 
 
 ### Analysis
 Explain what approaches from class you will bring to bear on the project.
@@ -9,11 +10,17 @@ Explain what approaches from class you will bring to bear on the project.
 Be explicit about the techiques from the class that you will use. For example:
 
 - Will you use data abstraction? How?
-- Will you use recursion? How?
-- Will you use map/filter/reduce? How? 
-- Will you use object-orientation? How?
+
+We will use recursion in part to process that data given by the XML files and generate the list of tile objects.
+
+- Will you use map/filter/reduce? How?
+
+We will use object orientation for the internal representation of the game. The individual tiles of the checkerboard will be represented as objects that contain their position and state data. The board itself will also be an object, containing the list of tiles as well as other information (score, etc.).
+
 - Will you use functional approaches to processing your data? How?
-- Will you use state-modification approaches? How? (If so, this should be encapsulated within objects. `set!` pretty much should only exist inside an object.)
+
+State modification will be used within the tile and board objects. The status of each tile (empty/occupied piece color, etc) will be changed via state modification when players move pieces and the state of certain components of the board, such as the number of pieces each player has will change as well.
+
 - Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
 - Will you use lazy evaluation approaches?
 
@@ -35,47 +42,25 @@ The ability to save and load game states is not only convenient for users but is
 
 ## Architecture Diagram
 ![Diagram](/fp4-architecture-diagram.png?raw=true)
+    
+The game board is represented internally by a list of 64 tile objects within an overarching board object. Each tile contains information on its position and current state (empty/red or black piece, etc).
 
-Create several paragraphs of narrative to explain the pieces and how they interoperate.
+The player makes a move by first choosing a given piece under his/her control and a desired destination tile. When the player issues the move command, the tile is checked against the list of tiles to determine if the move is valid by checking that the tile is empty and is either adjacent, or has an opponent’s piece in the preceding tile.
 
+At the start of the game or when a move is made, the board is drawn in accordance with the data contained in the tile objects. An image is drawn on the board corresponding to the state of the tile and the location of the tile.
+
+At any point during the game, the players can opt to save the game. This exports the data from each tile object to the corresponding data cell of an xlsx file. This data can then be loaded, setting the states of the tiles based on the data contained in the xlsx file.
 ## Schedule
-Explain how you will go from proposal to finished product. 
 
-There are three deliverable milestones to explicitly define, below.
+### First Milestone
+The program will be able to read from an XML file to create and display a checkerboard in the correct state.
 
-The nature of deliverables depend on your project, but may include things like processed data ready for import, core algorithms implemented, interface design prototyped, etc. 
+### Second Milestone
+The basic mechanics for piece movement and piece capture will be implemented. 
 
-You will be expected to turn in code, documentation, and data (as appropriate) at each of these stages.
+### Public Presentation
+Score keeping and the “king" pieces will be implemented. Game will end when one player has no pieces remaining.
 
-Write concrete steps for your schedule to move from concept to working system. 
-
-### First Milestone (Sun Apr 9)
-Which portion of the work will be completed (and committed to Github) by this day? 
-
-### Second Milestone (Sun Apr 16)
-Which portion of the work will be completed (and committed to Github) by this day?  
-
-### Public Presentation (Mon Apr 24, Wed Apr 26, or Fri Apr 28 [your date to be determined later])
-What additionally will be completed before the public presentation?
-
-## Group Responsibilities
-Here each group member gets a section where they, as an individual, detail what they are responsible for in this project. Each group member writes their own Responsibility section. Include the milestones and final deliverable.
-
-Please use Github properly: each individual must make the edits to this file representing their own section of work.
-
-**Additional instructions for teams of three:** 
-* Remember that you must have prior written permission to work in groups of three (specifically, an approved `FP3` team declaration submission).
-* The team must nominate a lead. This person is primarily responsible for code integration. This work may be shared, but the team lead has default responsibility.
-* The team lead has full partner implementation responsibilities also.
-* Identify who is team lead.
-
-In the headings below, replace the silly names and GitHub handles with your actual ones.
-
-### Susan Scheme @susanscheme
-will write the....
-
-### Leonard Lambda @lennylambda
-will work on...
-
-### Frank Funktions @frankiefunk 
-Frank is team lead. Additionally, Frank will work on...   
+### Alexander Pilozzi @PRXela
+-Inputting and exporting data to xlsx file
+-Interpreting user input  
