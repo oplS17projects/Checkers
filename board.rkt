@@ -1,10 +1,16 @@
+;; Checkers project
+;; Functions for drawing and manipulating board/square objects
+
 #lang racket
+
+(provide (all-defined-out))
 
 (require 2htdp/image)
 
 (define max-row 8)
 (define max-column 8)
 (define square-size 30)
+(define circle-radius (- (/ square-size 2) (/ square-size 8)))
 
 (define (make-square row column piece)
   (define (get-row) row)
@@ -20,7 +26,7 @@
           ((eq? m 'get-piece) (get-piece))
           ((eq? m 'set-piece) set-piece)
           (else (error "Invalid option -- MAKE-SQUARE DISPATCH" m))))
-  (if #t;(set-piece piece)
+  (if (set-piece piece)
       dispatch
       (error "Invalid piece type -- MAKE-SQUARE" piece)))
 
@@ -39,20 +45,35 @@
 (define board (make-board))
 
 (define (draw-row r) (foldr beside empty-image (map square-to-image r)))
-(define (draw-board) (overlay (foldr above empty-image (map draw-row board))
-                              (square (+ (* square-size 8) 2) 'solid 'black)))
 
-(define (square-to-image sq) (underlay (square square-size 'solid (if (same-arity? (sq 'get-row) (sq 'get-column))
+;; This is the top level function for creating the board image
+(define (draw-board) (overlay (foldr above empty-image (map draw-row board))
+                              (square (+ (* square-size 8) 4) 'solid 'black)))
+
+(define (square-to-image sq) (underlay (square square-size 'solid (if (red-square? sq)
                                                                       'firebrick ;to make distinct from red piece color
                                                                       'white)) ;to make distinct from black piece color
                                        (let ((p (sq 'get-piece)))
                                          (if (eq? p 'none)
                                              empty-image
-                                             (circle (- (/ square-size 2) (/ square-size 8)) 'solid p)))))
+                                             (overlay (circle circle-radius 'solid p)
+                                                      (circle (+ circle-radius 1) 'solid 'black))))))
 
 (define (same-arity? a b) (if (or (and (odd? a) (odd? b))
                                   (and (even? a) (even? b)))
                               #t
                               #f))
-                                
-;(foldr beside empty-image (list (square 30 'solid 'red) (square 30 'solid 'black) (square 30 'solid 'red) (square 30 'solid 'black)))
+
+(define (white-square? sq) (same-arity? (sq 'get-row) (sq 'get-column)))
+
+(define (red-square? sq) (not (white-square? sq)))
+
+
+(define (get-square row-num column-num board)
+  (let ((row (get-list-item (- row-num 1) board)))
+    (get-list-item (- column-num 1) row)))
+
+(define (get-list-item index lst)
+    (if (<= index 0)
+        (car lst)
+        (get-list-item (- index 1) (cdr lst))))
