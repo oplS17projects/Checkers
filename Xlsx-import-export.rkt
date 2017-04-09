@@ -17,14 +17,14 @@
 (define (revert-to-default) (update-board-from-grid default-board))
 
 (define default-board
-  '(((black) (none) (black) (none) (black) (none) (black) (none))
-  ((none) (black) (none) (black) (none) (black) (none) (black))
+  '(((none) (black) (none) (black) (none) (black) (none) (black))
   ((black) (none) (black) (none) (black) (none) (black) (none))
+  ((none) (black) (none) (black) (none) (black) (none) (black))
   ((none) (none) (none) (none) (none) (none) (none) (none))
   ((none) (none) (none) (none) (none) (none) (none) (none))
-  ((none) (red) (none) (red) (none) (red) (none) (red))
   ((red) (none) (red) (none) (red) (none) (red) (none))
-  ((none) (red) (none) (red) (none) (red) (none) (red))))
+  ((none) (red) (none) (red) (none) (red) (none) (red))
+  ((red) (none) (red) (none) (red) (none) (red) (none))))
 
 
 (define (incrementCharacter character)
