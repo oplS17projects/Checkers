@@ -41,7 +41,8 @@
                 (begin
                   ((tile1 'set-piece) 'none)
                   ((tile2 'set-piece) 'none)
-                  ((tile3 'set-piece) 'black)))
+                  ((tile3 'set-piece) 'black)
+                  'piece-captured))
                (else "no piece at start -- capture")))
         (else "destination is occupied -- capture")))
 
