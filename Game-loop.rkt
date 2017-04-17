@@ -45,10 +45,28 @@
         (if (equal? output 'failed) (player2-turn)
           output)))))
     
-(define (game-loop)
-  (if (equal? (player1-turn) 'exit) (display "exiting game")
-      (if (equal? (player2-turn) 'exit) (display "exiting game")
-          (game-loop))))
+;(define (game-loop)
+;  (if (equal? (player1-turn) 'exit)
+;      (display "exiting game")
+;      (if (equal? (player2-turn) 'exit)
+;          (display "exiting game")
+;          (game-loop))))
+
+(define (start) (game-loop 'p1))
+
+(define (game-loop turn)
+  (if (equal? turn 'exit)
+      (display "exiting game")
+      (game-loop (figure-out-next-turn turn (if (equal? turn 'p1)
+                                                 (player1-turn)
+                                                 (player2-turn))))))
+
+(define (figure-out-next-turn this-turn turn-result)
+  (cond ((equal? turn-result 'exit) turn-result)
+        ((equal? turn-result 'reset) 'p1)
+        (else (if (equal? this-turn 'p1)
+                  'p2
+                  'p1))))
 
 (define (display-board)
   (display (draw-board))
@@ -62,9 +80,14 @@
         ((equal? (car command) 'exit) 'exit)
         ((equal? (car command) 'default-board) (begin
                                                 (revert-to-default)
-                                                'failed))
+                                                'reset))
+        ((equal? (car command) 'load) (begin
+                                        (update-from-file)
+                                        'reset)) ;temporary, resets turn to p1
         ((equal? (car command) 'move) (move-command (cdr command) color))
-        ((equal? (car command) 'score) (display-score))
+        ((equal? (car command) 'score) (begin
+                                         (display-score)
+                                         'failed))
         (else (begin
                 (display "invalid command")
                 'failed))))
@@ -118,10 +141,10 @@
 
 (define (valid-direction? direction)
   (or
-   (equal? direction 'north)
-   (equal? direction 'south)
-   (equal? direction 'east)
-   (equal? direction 'west)
+   ;(equal? direction 'north)
+   ;(equal? direction 'south)
+   ;(equal? direction 'east)
+   ;(equal? direction 'west)
    (equal? direction 'northeast)
    (equal? direction 'northwest)
    (equal? direction 'southeast)
@@ -146,7 +169,7 @@
   (length (get-black-pieces)))
 
 (define (get-P2-pieces)
-  (length (get-black-pieces)))
+  (length (get-red-pieces)))
 
 (define (display-score)
   (begin
