@@ -1,4 +1,7 @@
 #lang racket
+
+(provide (all-defined-out))
+
 (require "board.rkt")
 (require "xlsx-import-export.rkt")
 
@@ -8,23 +11,23 @@
 (define (move-piece tile1 tile2)
   (cond ((or (equal? tile1 '()) (equal? tile2 '()))
          "Attempted illegal move: invalid co-ordinates -- move-piece")
-    ((equal? (tile1 'get-piece) 'red)
+        ((equal? (tile1 'get-piece) 'red)
          (cond ((equal? (tile2 'get-piece) 'none)
                 (begin
                   ((tile1 'set-piece) 'none)
                   ((tile2 'set-piece) 'red)
                   'piece-moved))
-                ((equal? (tile2 'get-piece) 'black) (capture tile1 tile2))
-                (else "Attempted illegal move: destination occupied -- move-piece")))
-         ((equal? (tile1 'get-piece) 'black)
-          (cond ((equal? (tile2 'get-piece) 'none)
-                 (begin
+               ((equal? (tile2 'get-piece) 'black) (capture tile1 tile2))
+               (else "Attempted illegal move: destination occupied -- move-piece")))
+        ((equal? (tile1 'get-piece) 'black)
+         (cond ((equal? (tile2 'get-piece) 'none)
+                (begin
                   ((tile1 'set-piece) 'none)
                   ((tile2 'set-piece) 'black)
                   'piece-moved))
-                ((equal? (tile2 'get-piece) 'red) (capture tile1 tile2))
-                (else "Attempted illegal move: destination occupied -- move-piece")))
-          (else "Attempted illegal move: no piece at start -- move-piece")))
+               ((equal? (tile2 'get-piece) 'red) (capture tile1 tile2))
+               (else "Attempted illegal move: destination occupied -- move-piece")))
+        (else "Attempted illegal move: no piece at start -- move-piece")))
 
 (define (capture tile1 tile2)
   (define tile3 (get-board-element (+ (tile2 'get-row) (- (tile2 'get-row) (tile1 'get-row)))
@@ -55,12 +58,12 @@
          (move-piece tile (get-board-element (tile 'get-row) (+ (tile 'get-column) 1))))
         ((equal? direction 'west)
          (move-piece tile (get-board-element (tile 'get-row) (- (tile 'get-column) 1))))
-        ((equal? direction 'north-east)
+        ((equal? direction 'northeast)
          (move-piece tile (get-board-element (- (tile 'get-row) 1) (+ (tile 'get-column) 1))))
-        ((equal? direction 'north-west)
+        ((equal? direction 'northwest)
          (move-piece tile (get-board-element (- (tile 'get-row) 1) (- (tile 'get-column) 1))))
-        ((equal? direction 'south-east)
+        ((equal? direction 'southeast)
          (move-piece tile (get-board-element (+ (tile 'get-row) 1) (+ (tile 'get-column) 1))))
-        ((equal? direction 'south-west)
+        ((equal? direction 'southwest)
          (move-piece tile (get-board-element (+ (tile 'get-row) 1) (- (tile 'get-column) 1))))
         (else "invalid direction -- move-in-direction")))
