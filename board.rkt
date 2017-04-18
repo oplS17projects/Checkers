@@ -47,8 +47,12 @@
 (define (draw-row r) (foldr beside empty-image (map square-to-image r)))
 
 ;; This is the top level function for creating the board image
-(define (draw-board) (overlay (foldr above empty-image (map draw-row board))
-                              (square (+ (* square-size 8) 4) 'solid 'black)))
+(define (draw-board) (above/align 'right
+                                   (beside (row-labels) (draw-board-without-labels))
+                                   (column-labels)))
+
+(define (draw-board-without-labels) (overlay (foldr above empty-image (map draw-row board))
+                                             (square (+ (* square-size 8) 4) 'solid 'black)))
 
 (define (square-to-image sq) (underlay (square square-size 'solid (if (red-square? sq)
                                                                       'firebrick ;to make distinct from red piece color
@@ -58,6 +62,15 @@
                                              empty-image
                                              (overlay (circle circle-radius 'solid p)
                                                       (circle (+ circle-radius 1) 'solid 'black))))))
+
+(define (row-labels) (overlay (foldr above empty-image (map draw-char (list "1" "2" "3" "4" "5" "6" "7" "8")))
+                              (rectangle (+ square-size 4) (+ (* square-size 8) 4) 'solid 'white)))
+
+(define (column-labels) (overlay (foldr beside empty-image (map draw-char (list "A" "B" "C" "D" "E" "F" "G" "H")))
+                                 (rectangle (+ (* square-size 8) 4) (+ square-size 4) 'solid 'white)))
+
+(define (draw-char c) (overlay (text c (- square-size 5) 'black)
+                               (square square-size 'solid 'white)))
 
 (define (same-arity? a b) (if (or (and (odd? a) (odd? b))
                                   (and (even? a) (even? b)))

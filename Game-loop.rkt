@@ -45,10 +45,29 @@
         (if (equal? output 'failed) (player2-turn)
           output)))))
     
-(define (game-loop)
-  (if (equal? (player1-turn) 'exit) (display "exiting game")
-      (if (equal? (player2-turn) 'exit) (display "exiting game")
-          (game-loop))))
+;(define (game-loop)
+;  (if (equal? (player1-turn) 'exit)
+;      (display "exiting game")
+;      (if (equal? (player2-turn) 'exit)
+;          (display "exiting game")
+;          (game-loop))))
+
+(define (start) (begin (revert-to-default)
+                       (game-loop 'p1)))
+
+(define (game-loop turn)
+  (if (equal? turn 'exit)
+      (display "exiting game")
+      (game-loop (figure-out-next-turn turn (if (equal? turn 'p1)
+                                                 (player1-turn)
+                                                 (player2-turn))))))
+
+(define (figure-out-next-turn this-turn turn-result)
+  (cond ((equal? turn-result 'exit) turn-result)
+        ((equal? turn-result 'reset) 'p1)
+        (else (if (equal? this-turn 'p1)
+                  'p2
+                  'p1))))
 
 (define (display-board)
   (display (draw-board))
@@ -62,11 +81,19 @@
         ((equal? (car command) 'exit) 'exit)
         ((equal? (car command) 'default-board) (begin
                                                 (revert-to-default)
-                                                'failed))
-        ((equal? (car command) 'move) (move-command (cdr command) color))
-        ((equal? (car command) 'score) (display-score))
+                                                'reset))
+        ((equal? (car command) 'load) (begin
+                                        (update-from-file)
+                                        'reset)) ;temporary, resets turn to p1
+        ((equal? (car command) 'move) (let ((result (move-command (cdr command) color)))
+                                        (if (equal? result 'illegal-move)
+                                            'failed
+                                            result)))
+        ((equal? (car command) 'score) (begin
+                                         (display-score)
+                                         'failed))
         (else (begin
-                (display "invalid command")
+                (displayln "invalid command")
                 'failed))))
        
 
@@ -86,7 +113,7 @@
              (move-piece (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
                          (get-square (y-coord (end-coord command))(x-coord (end-coord command)) board))
              'failed))
-        (else (if (valid-move-direction? (start-coord command) (direction command))
+        (else (if (valid-move-direction? color (direction command))
                   (move-in-direction (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
                                      (direction command))
                   (begin (display "You cannot move in that direction! ")
@@ -113,15 +140,19 @@
 (define (valid-dest-coord? start destination)
   #t);stub
 
-(define (valid-move-direction? start direction)
-  (valid-direction? direction)) ;needs to check destination
+(define (valid-move-direction? color direction)
+  (if (equal? color 'red)
+      (or (equal? direction 'northeast)
+          (equal? direction 'northwest))
+      (or (equal? direction 'southeast)
+          (equal? direction 'southwest))))
 
 (define (valid-direction? direction)
   (or
-   (equal? direction 'north)
-   (equal? direction 'south)
-   (equal? direction 'east)
-   (equal? direction 'west)
+   ;(equal? direction 'north)
+   ;(equal? direction 'south)
+   ;(equal? direction 'east)
+   ;(equal? direction 'west)
    (equal? direction 'northeast)
    (equal? direction 'northwest)
    (equal? direction 'southeast)
@@ -146,7 +177,7 @@
   (length (get-black-pieces)))
 
 (define (get-P2-pieces)
-  (length (get-black-pieces)))
+  (length (get-red-pieces)))
 
 (define (display-score)
   (begin

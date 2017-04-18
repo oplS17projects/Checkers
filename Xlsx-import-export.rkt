@@ -1,8 +1,11 @@
 #lang racket
+
+(provide (all-defined-out))
+
 (require racket/include)
 (require "board.rkt")
-
 (require simple-xlsx)
+
 (define file-name "checkers.xlsx")
 (define sheet-name "game")
 
