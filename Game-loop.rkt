@@ -52,7 +52,8 @@
 ;          (display "exiting game")
 ;          (game-loop))))
 
-(define (start) (game-loop 'p1))
+(define (start) (begin (revert-to-default)
+                       (game-loop 'p1)))
 
 (define (game-loop turn)
   (if (equal? turn 'exit)
@@ -84,12 +85,15 @@
         ((equal? (car command) 'load) (begin
                                         (update-from-file)
                                         'reset)) ;temporary, resets turn to p1
-        ((equal? (car command) 'move) (move-command (cdr command) color))
+        ((equal? (car command) 'move) (let ((result (move-command (cdr command) color)))
+                                        (if (equal? result 'illegal-move)
+                                            'failed
+                                            result)))
         ((equal? (car command) 'score) (begin
                                          (display-score)
                                          'failed))
         (else (begin
-                (display "invalid command")
+                (displayln "invalid command")
                 'failed))))
        
 
@@ -109,7 +113,7 @@
              (move-piece (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
                          (get-square (y-coord (end-coord command))(x-coord (end-coord command)) board))
              'failed))
-        (else (if (valid-move-direction? (start-coord command) (direction command))
+        (else (if (valid-move-direction? color (direction command))
                   (move-in-direction (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
                                      (direction command))
                   (begin (display "You cannot move in that direction! ")
@@ -136,8 +140,12 @@
 (define (valid-dest-coord? start destination)
   #t);stub
 
-(define (valid-move-direction? start direction)
-  (valid-direction? direction)) ;needs to check destination
+(define (valid-move-direction? color direction)
+  (if (equal? color 'red)
+      (or (equal? direction 'northeast)
+          (equal? direction 'northwest))
+      (or (equal? direction 'southeast)
+          (equal? direction 'southwest))))
 
 (define (valid-direction? direction)
   (or
