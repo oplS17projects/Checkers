@@ -28,6 +28,13 @@
     (display-board)
     (newline)
     (declare-turn 1)
+    (let ((pieces (pieces-that-can-capture 'black)))
+      (if (null? pieces)
+          (void)
+          (begin
+            (display "You have pieces that can make a capture on: ")
+            (map display-tile-ID pieces)
+            (newline))))
     (display "Please enter a command: ")
     (let ((input (read)))
       (let ((output (process-command input 'black)))
@@ -39,19 +46,20 @@
     (display-board)
     (newline)
     (declare-turn 2)
+    (let ((pieces (pieces-that-can-capture 'red)))
+      (if (null? pieces)
+          (void)
+          (begin
+            (display "You have pieces that can make a capture on: ")
+            (map display-tile-ID pieces)
+            (newline))))
     (display "Please enter a command: ")
     (let ((input (read)))
       (let ((output (process-command input 'red)))
         (if (equal? output 'failed) (player2-turn)
           output)))))
-    
-;(define (game-loop)
-;  (if (equal? (player1-turn) 'exit)
-;      (display "exiting game")
-;      (if (equal? (player2-turn) 'exit)
-;          (display "exiting game")
-;          (game-loop))))
 
+;; This is the top-most function. Call this to start the game.
 (define (start) (begin (revert-to-default)
                        (game-loop 'p1)))
 
@@ -158,20 +166,6 @@
    (equal? direction 'southeast)
    (equal? direction 'southwest)
    ))
-
-(define (get-black-pieces)
-  (define (get-black-pieces-recurse row)
-    (if (= row max-row) '()
-    (append (filter (lambda (tile) (equal? (tile 'get-piece) 'black)) (get-row row board))
-          (get-black-pieces-recurse (add1 row)))))
-  (get-black-pieces-recurse 0));generates list of all black tiles
-
-(define (get-red-pieces)
-  (define (get-red-pieces-recurse row)
-    (if (= row max-row) '()
-    (append (filter (lambda (tile) (equal? (tile 'get-piece) 'red)) (get-row row board))
-          (get-red-pieces-recurse (add1 row)))))
-  (get-red-pieces-recurse 0));generates list of all red tiles
 
 (define (get-P1-pieces)
   (length (get-black-pieces)))
