@@ -30,12 +30,12 @@
                   ((tile2 'set-piece) 'black)
                   'piece-moved))
                ((equal? (tile2 'get-piece) 'red) (capture tile1 tile2))
-               (else (display "Illegal move: destination occupied") 'illegal-move)))
+               (else (displayln "Illegal move: destination occupied") 'illegal-move)))
         (else (displayln "Illegal move: no piece at start") 'illegal-move)))
 
 (define (capture tile1 tile2)
   (define tile3 (jump-destination-tile tile1 tile2))
-  (cond ((equal? tile3 '()) "Invalid co-ordinates -- capture")
+  (cond ((equal? tile3 '()) (displayln "Illegal move: capture destination out of range") 'illegal-move)
         ((equal? (tile3 'get-piece) 'none)
          (cond ((equal? (tile1 'get-piece) 'red)
                 (begin
