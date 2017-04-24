@@ -138,8 +138,7 @@
   (send save add-data-sheet
         #:sheet_name sheet-name
         #:sheet_data (generate-export-grid color))
-  (write-xlsx-file save file)
-  ))
+  (write-xlsx-file save file)))
                         
 
 

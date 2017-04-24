@@ -206,8 +206,7 @@
                                      (newline)
                                      (displayln "PLAYER 2 IS THE WINNER!!!")
                                      (display "With ")
-                                     (display (get-P2-pieces))
-                                     (let ((remaining (get-P1-pieces)))
+                                     (let ((remaining (get-P2-pieces)))
                                        (begin
                                          (display remaining)
                                          (if (= remaining 1)
