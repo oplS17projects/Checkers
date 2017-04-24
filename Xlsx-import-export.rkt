@@ -22,14 +22,15 @@
 
 (define (revert-to-default) (update-board-from-grid default-board))
 
-(define default-board '(((black normal) (none) (black normal) (none) (black normal) (none) (black normal) (none))
-  ((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
+(define default-board
+  '(((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
   ((black normal) (none) (black normal) (none) (black normal) (none) (black normal) (none))
+   ((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
   ((none) (none) (none) (none) (none) (none) (none) (none))
   ((none) (none) (none) (none) (none) (none) (none) (none))
-  ((none) (red normal) (none) (red normal) (none) (red normal) (none) (red normal))
   ((red normal) (none) (red normal) (none) (red normal) (none) (red normal) (none))
   ((none) (red normal) (none) (red normal) (none) (red normal) (none) (red normal))
+  ((red normal) (none) (red normal) (none) (red normal) (none) (red normal) (none))
   ((p1) () () () () () () ())))
 
 
