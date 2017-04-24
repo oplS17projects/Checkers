@@ -176,15 +176,6 @@
   (cond ((tile 'king?) (or (equal? direction 'northeast)
                            (equal? direction 'northwest)
                            (equal? direction 'southeast)
-<<<<<<< HEAD
-                           (equal? direction 'southwest))))
-  ((equal? (tile 'get-piece)  'red)
-      (or (equal? direction 'northeast)
-          (equal? direction 'northwest)))
-  ((equal? (tile 'get-piece) 'black)
-      (or (equal? direction 'southeast)
-          (equal? direction 'southwest))))
-=======
                            (equal? direction 'southwest)))
         ((equal? (tile 'get-piece)  'red)
          (or (equal? direction 'northeast)
@@ -192,7 +183,6 @@
         ((equal? (tile 'get-piece) 'black)
          (or (equal? direction 'southeast)
              (equal? direction 'southwest)))))
->>>>>>> refs/remotes/origin/PR
 
 (define (valid-direction? direction)
   (or
