@@ -94,9 +94,9 @@
                                         (update-from-file)
                                         'reset)) ;temporary, resets turn to p1
         ((equal? (car command) 'move) (let ((result (move-command (cdr command) color)))
-                                        (if (equal? result 'illegal-move)
-                                            'failed
-                                            result)))
+                                        (cond ((equal? result 'illegal-move) 'failed)
+                                              ((equal? result 'capture-done) (check-winner))
+                                              (else result))))
         ((equal? (car command) 'score) (begin
                                          (display-score)
                                          'failed))
@@ -132,7 +132,11 @@
 
 (define (end-coord lst) (cadr lst))
 
-(define (x-coord lst) (car lst))
+(define (x-coord lst)
+  (let ((x (car lst)))
+    (if (integer? x)
+        x
+        (- (convert-to-integer x) 64))))
 
 (define (y-coord lst) (cadr lst))
 
@@ -148,6 +152,12 @@
 (define (valid-dest-coord? start destination)
   #t);stub
 
+(define (symbol->char sym)
+  (string-ref (symbol->string sym) 0))
+
+(define (convert-to-integer sym)
+  (char->integer (symbol->char sym)))
+
 (define (valid-move-direction? color direction)
   (if (equal? color 'red)
       (or (equal? direction 'northeast)
@@ -157,10 +167,6 @@
 
 (define (valid-direction? direction)
   (or
-   ;(equal? direction 'north)
-   ;(equal? direction 'south)
-   ;(equal? direction 'east)
-   ;(equal? direction 'west)
    (equal? direction 'northeast)
    (equal? direction 'northwest)
    (equal? direction 'southeast)
@@ -181,4 +187,15 @@
   (display "player 2 pieces remaining: ")
   (display (get-P2-pieces))
   (newline)))
-   
+
+(define (check-winner) (cond ((= (get-P1-pieces) 0)
+                              (begin (display-board)
+                                     (newline)
+                                     (displayln "PLAYER 2 IS THE WINNER!!!")
+                                     'exit))
+                             ((= (get-P2-pieces) 0)
+                              (begin (display-board)
+                                     (newline)
+                                     (displayln "PLAYER 1 IS THE WINNER!!!")
+                                     'exit))
+                             (else 'continue)))
