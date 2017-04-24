@@ -16,7 +16,7 @@
   (set! file-name string))
 
 (define (update-from-file [file file-name])
-  (if (file-exists? file)(update-board-from-grid (get-board-from-xlsx file sheet-name))
+  (if (file-exists? file) (update-board-from-grid (get-board-from-xlsx file sheet-name))
       (begin (displayln "Invalid filename!")
              'failed)))
 
