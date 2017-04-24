@@ -59,7 +59,7 @@
     (display "Please enter a command: ")
     (let ((input (read)))
       (let ((output (process-command input 'red)))
-        (cond ((equal? output 'failed) (player1-turn))
+        (cond ((equal? output 'failed) (player2-turn))
               ((equal? output 'p1) (player1-turn))
               ((equal? output 'p2) (player2-turn))
               ((equal? output 'reset) (player1-turn))
