@@ -171,10 +171,15 @@
 (define (convert-to-integer sym)
   (char->integer (symbol->char sym)))
 
-(define (valid-move-direction? color direction)
-  (if (equal? color 'red)
+(define (valid-move-direction? tile direction)
+  (cond ((tile 'king?) (or (equal? direction 'northeast)
+                           (equal? direction 'northwest)
+                           (equal? direction 'southeast)
+                           (equal? direction 'southwest))))
+  ((equal? (tile 'get-piece)  'red)
       (or (equal? direction 'northeast)
-          (equal? direction 'northwest))
+          (equal? direction 'northwest)))
+  ((equal? (tile 'get-piece) 'black)
       (or (equal? direction 'southeast)
           (equal? direction 'southwest))))
 
