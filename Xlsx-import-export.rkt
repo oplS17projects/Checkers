@@ -15,20 +15,22 @@
 (define (change-sheet-name string)
   (set! file-name string))
 
-(define (update-from-file) (update-board-from-grid (get-board-from-xlsx file-name sheet-name)))
+(define (update-from-file [file file-name])
+  (if (file-exists? file)(update-board-from-grid (get-board-from-xlsx file sheet-name))
+      (begin (displayln "Invalid filename!")
+             'failed)))
 
 (define (revert-to-default) (update-board-from-grid default-board))
 
-(define default-board
-  '(((none) (black) (none) (black) (none) (black) (none) (black))
-  ((black) (none) (black) (none) (black) (none) (black) (none))
-  ((none) (black) (none) (black) (none) (black) (none) (black))
+(define default-board '(((black normal) (none) (black normal) (none) (black normal) (none) (black normal) (none))
+  ((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
+  ((black normal) (none) (black normal) (none) (black normal) (none) (black normal) (none))
   ((none) (none) (none) (none) (none) (none) (none) (none))
   ((none) (none) (none) (none) (none) (none) (none) (none))
-  ((red) (none) (red) (none) (red) (none) (red) (none))
-  ((none) (red) (none) (red) (none) (red) (none) (red))
-  ((red) (none) (red) (none) (red) (none) (red) (none))
-  (('p1) () () () () () () ())))
+  ((none) (red normal) (none) (red normal) (none) (red normal) (none) (red normal))
+  ((red normal) (none) (red normal) (none) (red normal) (none) (red normal) (none))
+  ((none) (red normal) (none) (red normal) (none) (red normal) (none) (red normal))
+  ((p1) () () () () () () ())))
 
 
 (define (incrementCharacter character)
@@ -37,8 +39,10 @@
 (define (get-tile row column board-data)
   (define data (get-cell-value (string column row) board-data))
   (cond ((equal? data "E") (list 'none))
-        ((equal? data "B n")(list 'black))
-        ((equal? data "R n") (list 'red))
+        ((equal? data "B n")(cons 'black 'normal))
+        ((equal? data "R n") (cons 'red 'normal))
+        ((equal? data "B k") (cons 'black 'king))
+        ((equal? data "R k") (cons 'black 'king))
         ((and (equal? data "p1") (equal? row #\9)) (list 'p1))
         ((and (equal? data "p2") (equal? row #\9)) (list 'p2))
         ((equal? data "") '())
@@ -51,7 +55,6 @@
 (define (get-sheet-row row column board-data)
   (cond ((> (- (char->integer column) 64) 8) '())
         (else (cons (get-tile row column board-data) (get-sheet-row row (incrementCharacter column) board-data)))))
-
 
 (define (get-row row grid)
   (cond ((eq? '() grid) grid)
@@ -77,9 +80,19 @@
   tiles)
 
 (define (update-tile square cell)
-  (cond ((equal? (car cell) 'red) ((square 'set-piece) 'red))
-        ((equal? (car cell) 'black) ((square 'set-piece)'black))
-        ((equal? (car cell) 'none) ((square 'set-piece) 'none))
+  (cond ((equal? (car cell) 'red) (begin
+                                    ((square 'set-piece) 'red)
+                                    (if (equal? (cdr cell) 'king)
+                                        ((square 'set-king) #t)
+                                        ((square 'set-king) #f))))
+        ((equal? (car cell) 'black) (begin
+                                      ((square 'set-piece)'black)
+                                      (if (equal? (cdr cell) 'king)
+                                          ((square 'set-king) #t)
+                                          ((square 'set-king) #f))))
+        ((equal? (car cell) 'none) (begin
+                                     ((square 'set-piece) 'none)
+                                     ((square 'set-king) #f)))
         (else (error "invalid data in source -- update-tile"))))
 
 
@@ -109,19 +122,23 @@
           ((= column max-column) (cons  lst (loop-through (+ row 1) 0 '())))
           (else (begin
                   (cond ((equal? ((get-square (+ row 1) (+ column 1) board) 'get-piece) 'none)
-                         (loop-through row (+ 1 column) (cons "E" lst)))
+                         (loop-through row (+ 1 column) (append lst (list "E"))))
                         ((equal? ((get-square (+ row 1) (+ column 1) board) 'get-piece) 'black)
-                         (loop-through row (+ 1 column) (cons "B n" lst)))
+                         (if ((get-square (+ row 1) (+ column 1) board) 'king?)
+                             (loop-through row (+ 1 column) (append lst (list "B k")))
+                             (loop-through row (+ 1 column) (append lst (list "B n")))))
                         ((equal? ((get-square (+ row 1) (+ column 1) board) 'get-piece) 'red)
-                         (loop-through row (+ 1 column) (cons "R n" lst))))))))
+                         (if ((get-square (+ row 1) (+ column 1) board) 'king?)
+                             (loop-through row (+ 1 column) (append lst (list "R k")))
+                             (loop-through row (+ 1 column) (append lst (list "R n"))))))))))
   (loop-through 0 0 '()))
 
-(define (save-data color)
+(define (save-data color [file file-name])
   (let ((save (new xlsx%)))
   (send save add-data-sheet
         #:sheet_name sheet-name
         #:sheet_data (generate-export-grid color))
-  (write-xlsx-file save file-name)
+  (write-xlsx-file save file)
   ))
                         
 
