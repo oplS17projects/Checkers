@@ -38,8 +38,11 @@
     (display "Please enter a command: ")
     (let ((input (read)))
       (let ((output (process-command input 'black)))
-        (if (equal? output 'failed) (player1-turn)
-          output)))))
+        (cond ((equal? output 'failed) (player1-turn))
+              ((equal? output 'p1) (player1-turn))
+              ((equal? output 'p2) (player2-turn))
+              ((equal? output 'reset) (player1-turn))
+              (else (player2-turn)))))))
 
 (define (player2-turn)
   (begin
@@ -56,8 +59,11 @@
     (display "Please enter a command: ")
     (let ((input (read)))
       (let ((output (process-command input 'red)))
-        (if (equal? output 'failed) (player2-turn)
-          output)))))
+        (cond ((equal? output 'failed) (player1-turn))
+              ((equal? output 'p1) (player1-turn))
+              ((equal? output 'p2) (player2-turn))
+              ((equal? output 'reset) (player1-turn))
+              (else (player1-turn)))))))
 
 ;; This is the top-most function. Call this to start the game.
 (define (start) (begin (revert-to-default)
@@ -90,9 +96,7 @@
         ((equal? (car command) 'default-board) (begin
                                                 (revert-to-default)
                                                 'reset))
-        ((equal? (car command) 'load) (begin
-                                        (update-from-file)
-                                        'reset)) ;temporary, resets turn to p1
+        ((equal? (car command) 'load) (update-from-file))                                        
         ((equal? (car command) 'move) (let ((result (move-command (cdr command) color)))
                                         (if (equal? result 'illegal-move)
                                             'failed
@@ -100,6 +104,9 @@
         ((equal? (car command) 'score) (begin
                                          (display-score)
                                          'failed))
+        ((equal? (car command) 'save) (begin
+                                        (save-data color)
+                                        'failed))
         (else (begin
                 (displayln "invalid command")
                 'failed))))

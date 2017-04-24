@@ -27,7 +27,8 @@
   ((none) (none) (none) (none) (none) (none) (none) (none))
   ((red) (none) (red) (none) (red) (none) (red) (none))
   ((none) (red) (none) (red) (none) (red) (none) (red))
-  ((red) (none) (red) (none) (red) (none) (red) (none))))
+  ((red) (none) (red) (none) (red) (none) (red) (none))
+  (('p1) () () () () () () ())))
 
 
 (define (incrementCharacter character)
@@ -38,6 +39,9 @@
   (cond ((equal? data "E") (list 'none))
         ((equal? data "B n")(list 'black))
         ((equal? data "R n") (list 'red))
+        ((and (equal? data "p1") (equal? row #\9)) (list 'p1))
+        ((and (equal? data "p2") (equal? row #\9)) (list 'p2))
+        ((equal? data "") '())
         (else (error "invalid data -- get-tile"))))
                                 
 
@@ -65,10 +69,11 @@
     (lambda (board-data)
       (load-sheet sheet board-data)
       (define (loop-through-board row column lst)
-        (cond ((> (- ( char->integer row) 48) 8) lst)
+        (cond ((> (- ( char->integer row) 48) 9) lst)
               ((equal? lst '()) (loop-through-board (incrementCharacter row) column (list (get-sheet-row row column board-data))))
               (else (loop-through-board (incrementCharacter row) column (append lst (list (get-sheet-row row column board-data)))))))
-              (set! tiles (loop-through-board #\1 #\A '()))))
+        (set! tiles (loop-through-board #\1 #\A '()))))
+      
   tiles)
 
 (define (update-tile square cell)
@@ -80,7 +85,7 @@
 
 (define (update-board-from-grid grid)
   (define (loop-through-grid row column grid)
-    (cond ((= row max-row) "data_updated")
+    (cond ((= row max-row) (car (get-element 0 (get-row 8 grid))))
           ((= column max-column) (loop-through-grid (+ row 1) 0 grid))
           (else (begin
                   (update-tile (get-element column (get-row row board))
@@ -95,6 +100,30 @@
          (nth-element-iter (- count 1) (lambda (n) (proc (cdr n))))))
     (nth-element-iter n car))
   (map (nth-element column) (filter (lambda (n) (> (length n) column)) grid)))
+
+(define (generate-export-grid color)
+  (define (loop-through row column lst)
+    (cond ((= row max-row) (if (equal? color 'black)
+                           (append lst (list '("p1" "" "" "" "" "" "" "")))
+                           (append lst (list'("p2" "" "" "" "" "" "" "")))))
+          ((= column max-column) (cons  lst (loop-through (+ row 1) 0 '())))
+          (else (begin
+                  (cond ((equal? ((get-square (+ row 1) (+ column 1) board) 'get-piece) 'none)
+                         (loop-through row (+ 1 column) (cons "E" lst)))
+                        ((equal? ((get-square (+ row 1) (+ column 1) board) 'get-piece) 'black)
+                         (loop-through row (+ 1 column) (cons "B n" lst)))
+                        ((equal? ((get-square (+ row 1) (+ column 1) board) 'get-piece) 'red)
+                         (loop-through row (+ 1 column) (cons "R n" lst))))))))
+  (loop-through 0 0 '()))
+
+(define (save-data color)
+  (let ((save (new xlsx%)))
+  (send save add-data-sheet
+        #:sheet_name sheet-name
+        #:sheet_data (generate-export-grid color))
+  (write-xlsx-file save file-name)
+  ))
+                        
 
 
 
