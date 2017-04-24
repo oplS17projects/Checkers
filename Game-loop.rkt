@@ -14,7 +14,6 @@
 ;(move (# #) [direction]) -> moves piece from coordinate in the desired direction)
 ;(default-board) -> reverts board to default state
 ;(score) -> displays # of pieces remaining for each player
-
 (define (declare-turn player)
   (if (= player 1) (begin
                      (display "It is player 1's turn!")
@@ -38,8 +37,12 @@
     (display "Please enter a command: ")
     (let ((input (read)))
       (let ((output (process-command input 'black)))
-        (if (equal? output 'failed) (player1-turn)
-          output)))))
+        (cond ((equal? output 'failed) 'p1)
+              ((equal? output 'p1) 'p1)
+              ((equal? output 'p2) 'p2)
+              ((equal? output 'reset) 'p1)
+              ((equal? output 'exit) 'exit)
+              (else 'p2))))))
 
 (define (player2-turn)
   (begin
@@ -56,8 +59,12 @@
     (display "Please enter a command: ")
     (let ((input (read)))
       (let ((output (process-command input 'red)))
-        (if (equal? output 'failed) (player2-turn)
-          output)))))
+        (cond ((equal? output 'failed) 'p2)
+              ((equal? output 'p1) 'p1)
+              ((equal? output 'p2) 'p2)
+              ((equal? output 'reset) 'p1)
+              ((equal? output 'exit) 'exit)
+              (else 'p1))))))
 
 ;; This is the top-most function. Call this to start the game.
 (define (start) (begin (revert-to-default)
@@ -73,9 +80,7 @@
 (define (figure-out-next-turn this-turn turn-result)
   (cond ((equal? turn-result 'exit) turn-result)
         ((equal? turn-result 'reset) 'p1)
-        (else (if (equal? this-turn 'p1)
-                  'p2
-                  'p1))))
+        (else turn-result)))
 
 (define (display-board)
   (display (draw-board))
@@ -91,15 +96,21 @@
                                                 (revert-to-default)
                                                 'reset))
         ((equal? (car command) 'load) (begin
-                                        (update-from-file)
-                                        'reset)) ;temporary, resets turn to p1
+                                        (if (and (> (length command) 1) (string? (name command)))
+                                            (update-from-file (string-append (name command) ".xlsx"))
+                                            (update-from-file))))
         ((equal? (car command) 'move) (let ((result (move-command (cdr command) color)))
-                                        (if (equal? result 'illegal-move)
-                                            'failed
-                                            result)))
+                                        (cond ((equal? result 'illegal-move) 'failed)
+                                              ((equal? result 'capture-done) (check-winner))
+                                              (else result))))
         ((equal? (car command) 'score) (begin
                                          (display-score)
                                          'failed))
+        ((equal? (car command) 'save) (begin
+                                        (if (and (> (length command) 1) (string? (name command)))
+                                            (save-data color (string-append (name command) ".xlsx"))
+                                            (save-data color))
+                                        'failed))
         (else (begin
                 (displayln "invalid command")
                 'failed))))
@@ -121,7 +132,8 @@
              (move-piece (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
                          (get-square (y-coord (end-coord command))(x-coord (end-coord command)) board))
              'failed))
-        (else (if (valid-move-direction? color (direction command))
+        (else (if (valid-move-direction? (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
+                                         (direction command))
                   (move-in-direction (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
                                      (direction command))
                   (begin (display "You cannot move in that direction! ")
@@ -132,9 +144,15 @@
 
 (define (end-coord lst) (cadr lst))
 
-(define (x-coord lst) (car lst))
+(define (x-coord lst)
+  (let ((x (car lst)))
+    (if (integer? x)
+        x
+        (- (convert-to-integer x) 64))))
 
 (define (y-coord lst) (cadr lst))
+
+(define (name lst) (cadr lst))
 
 (define (direction lst) (cadr lst))
 
@@ -148,19 +166,26 @@
 (define (valid-dest-coord? start destination)
   #t);stub
 
-(define (valid-move-direction? color direction)
-  (if (equal? color 'red)
-      (or (equal? direction 'northeast)
-          (equal? direction 'northwest))
-      (or (equal? direction 'southeast)
-          (equal? direction 'southwest))))
+(define (symbol->char sym)
+  (string-ref (symbol->string sym) 0))
+
+(define (convert-to-integer sym)
+  (char->integer (symbol->char sym)))
+
+(define (valid-move-direction? tile direction)
+  (cond ((tile 'king?) (or (equal? direction 'northeast)
+                           (equal? direction 'northwest)
+                           (equal? direction 'southeast)
+                           (equal? direction 'southwest)))
+        ((equal? (tile 'get-piece)  'red)
+         (or (equal? direction 'northeast)
+             (equal? direction 'northwest)))
+        ((equal? (tile 'get-piece) 'black)
+         (or (equal? direction 'southeast)
+             (equal? direction 'southwest)))))
 
 (define (valid-direction? direction)
   (or
-   ;(equal? direction 'north)
-   ;(equal? direction 'south)
-   ;(equal? direction 'east)
-   ;(equal? direction 'west)
    (equal? direction 'northeast)
    (equal? direction 'northwest)
    (equal? direction 'southeast)
@@ -181,4 +206,31 @@
   (display "player 2 pieces remaining: ")
   (display (get-P2-pieces))
   (newline)))
-   
+
+(define (check-winner) (cond ((= (get-P1-pieces) 0)
+                              (begin (display-board)
+                                     (newline)
+                                     (displayln "PLAYER 2 IS THE WINNER!!!")
+                                     (display "With ")
+                                     (let ((remaining (get-P2-pieces)))
+                                       (begin
+                                         (display remaining)
+                                         (if (= remaining 1)
+                                             (display " piece left!")
+                                             (display " pieces remaining!"))
+                                         (newline)))
+                                     'exit))
+                             ((= (get-P2-pieces) 0)
+                              (begin (display-board)
+                                     (newline)
+                                     (displayln "PLAYER 1 IS THE WINNER!!!")
+                                     (display "With ")
+                                     (let ((remaining (get-P1-pieces)))
+                                       (begin
+                                         (display remaining)
+                                         (if (= remaining 1)
+                                             (display " piece left!")
+                                             (display " pieces remaining!"))
+                                             (newline)))
+                                     'exit))
+                             (else 'continue)))
