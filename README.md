@@ -31,18 +31,19 @@ State Modification:
 - State modification is primarily used within the tile objects and only for the `piece` and `is-king` parameters, the values of which change as the player moves pieces around the board, or are set when the user loads a game state from a file.
 - State modification is used in the xlsx library to get around some of the limitations of the simple-xlsx procedures.
 
-Expression Evaluator: 
+#### Expression Evaluator: 
+An expression evaluator was built for the interpretation of user input. On each turn, the player issues commands by inputting a list containing the desired command and any associated parameters. The evaluator then processes that list, separating the command from its parameters and validating both before executing the correct procedure. The evaluator then outputs a symbol that dictates how the game-loop will respond to the player's action (exchange turns, ask for another command from the same player, etc.).
 
-### External Technologies
+#### External Technologies
 We are using Open XML format files (.xlsx file, the format that MS Excel saves spreadsheets in) to store data about the state of the game board. The simple-xlsx library is what we used to get information in and out of these files.
 
-### Data Sets or other Source Materials
+#### Data Sets or other Source Materials
 We do not need to make use of data from any external source. We have, however, created some of our own data sets to test our program with. Specifically, we created .xlsx files with data representing sample game configurations to make sure our program properly parses and incorporates the data. Some of these configurations allow for testing various features, and can be loaded on the fly from within the game loop itself. The [Test files folder](Test%20files) contains some of these.
 
-### Deliverable and Demonstration
+#### Deliverable and Demonstration
 Our deliverable is a fully interactive game of checkers played in the Racket REPL. The game does not have an AI, but is designed to be played by two users in alternating turns. At the live demo we will primarily demonstrate playing the game. We will also be able to demonstrate saving and loading various instances of the game. Various pre-made scenarios will be available to showcase some of the more complicated features.
 
-### Evaluation of Results
+#### Evaluation of Results
 The ability to save and load game states is not only convenient for users but is also a perfect mechanism for testing that the program is working properly since it provides the ability to essentially print out (in a file) the internal state of the board. This makes it easy to check that the program does as expected after each user input. The state contained in the file must match up with the visual of the board within DrRacket and the options available to the player on that turn. As long as these elements consistently match up, we know that the program works correctly.
 
 ## Architecture Diagram
