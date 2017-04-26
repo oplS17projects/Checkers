@@ -31,8 +31,8 @@ State Modification:
 - State modification is primarily used within the tile objects and only for the `piece` and `is-king` parameters, the values of which change as the player moves pieces around the board, or are set when the user loads a game state from a file.
 - State modification is used in the xlsx library to get around some of the limitations of the simple-xlsx procedures.
 
-#### Expression Evaluator
-An expression evaluator was built for the interpretation of user input. On each turn, the player issues commands by inputting a list containing the desired command and any associated parameters. The evaluator then processes that list, separating the command from its parameters and validating both before executing the correct procedure. The evaluator then outputs a symbol that dictates how the game-loop will respond to the player's action (exchange turns, ask for another command from the same player, etc.).
+Expression Evaluator:
+- An expression evaluator was built for the interpretation of user input. On each turn, the player issues commands by inputting a list containing the desired command and any associated parameters. The evaluator then processes that list, separating the command from its parameters and validating both before executing the correct procedure. The evaluator then outputs a symbol that dictates how the game-loop will respond to the player's action (exchange turns, ask for another command from the same player, etc.).
 
 #### External Technologies
 We are using Open XML format files (.xlsx file, the format that MS Excel saves spreadsheets in) to store data about the state of the game board. The simple-xlsx library is what we used to get information in and out of these files.
