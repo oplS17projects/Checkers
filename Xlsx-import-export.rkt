@@ -25,7 +25,7 @@
 (define default-board
   '(((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
   ((black normal) (none) (black normal) (none) (black normal) (none) (black normal) (none))
-   ((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
+  ((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
   ((none) (none) (none) (none) (none) (none) (none) (none))
   ((none) (none) (none) (none) (none) (none) (none) (none))
   ((red normal) (none) (red normal) (none) (red normal) (none) (red normal) (none))
@@ -43,7 +43,7 @@
         ((equal? data "B n")(cons 'black 'normal))
         ((equal? data "R n") (cons 'red 'normal))
         ((equal? data "B k") (cons 'black 'king))
-        ((equal? data "R k") (cons 'black 'king))
+        ((equal? data "R k") (cons 'red 'king))
         ((and (equal? data "p1") (equal? row #\9)) (list 'p1))
         ((and (equal? data "p2") (equal? row #\9)) (list 'p2))
         ((equal? data "") '())
