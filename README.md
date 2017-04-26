@@ -47,15 +47,15 @@ Our deliverable is a fully interactive game of checkers played in the Racket REP
 The ability to save and load game states is not only convenient for users but is also a perfect mechanism for testing that the program is working properly since it provides the ability to essentially print out (in a file) the internal state of the board. This makes it easy to check that the program does as expected after each user input. The state contained in the file must match up with the visual of the board within DrRacket and the options available to the player on that turn. As long as these elements consistently match up, we know that the program works correctly.
 
 ## Architecture Diagram
-![Diagram](/fp4-architecture-diagram.png?raw=true)
+![Diagram](/architecture-diagram-updated.png?raw=true)
     
-The game board is represented internally by a list of 64 tile objects within an overarching board object. Each tile contains information on its position and current state (empty/red or black piece, etc).
+The game board is represented internally by a list of 64 tile objects within an overarching board object. Each tile contains information on its position (row/column) and current state (empty/red piece/black piece, king/not king).
 
-At the start of the game and whenever a move is made, the board is drawn on-screen in accordance with the data contained in the tile objects. Each tile is drawn in its given position, and if its state specifies it has a piece on it then the graphic is overlayed with a circle of the specified color.
+At the start of the game and after each player input, the board is drawn on-screen in accordance with the data contained in the tile objects. Each tile is drawn in its given position, and if its state specifies it has a piece on it then the graphic is overlayed with a circle of the specified color (and if that piece is a king it is further overlayed with a gold star in the center of the circle).
 
-The player makes a move by first choosing a given piece under his/her control and a desired destination tile. When the player issues the move command, the tile is checked against the list of tiles to determine if the move is valid (e.g. the destination tile is not already occupied by a piece, the destination can be reached by moving on diagonals, etc.).
+The player makes a move by choosing a given piece under his/her control by its column letter and row number and indicating the direction to move it. The direction can be southeast or southwest for black pieces, northeast or northwest for red pieces, or any of the four directions for a king of either color. When the player issues the move command, the tile of the selected piece is checked against the  tile diagonally adjacent to it in the indicated direction to determine if the move is valid (e.g. the destination tile is not already occupied by another of the player's pieces, if the destination tile contains an opponent piece then capture it if the tile beyond that is empty, etc.). The move is executed by setting the new piece values of the tiles involved in the move.
 
-At any point during the game, the players can issue a command to save the game. This exports the data from each tile object to the corresponding data cell of an xlsx file. This data can then be loaded, setting the states of the tiles based on the data contained in the xlsx file.
+At any point during the game, the players can issue a command to save the game. This exports the data from each tile object to the corresponding data cell of an xlsx file and also saves which player's turn it is. The players can also choose to load a game from a previously-saved xlsx file, setting the states of the tiles based on the data contained in the file and also setting the next turn as indicated in the file.
 
 ## Schedule
 
