@@ -32,7 +32,7 @@ Expression Evaluator:
 We are using Open XML format files (.xlsx file, the format that MS Excel saves spreadsheets in) to store data about the state of the game board. The simple-xlsx library is what we used to get information in and out of these files.
 
 ### Data Sets or other Source Materials
-We do not need to make use of data from any external source. We have, however, created some of our own data sets to test our program with. Specifically, we created .xlsx files with data representing sample game configurations to make sure our program properly parses and incorporates the data. The [Test files folder]("./Test files") folder contains some of these.
+We do not need to make use of data from any external source. We have, however, created some of our own data sets to test our program with. Specifically, we created .xlsx files with data representing sample game configurations to make sure our program properly parses and incorporates the data. The [Test files folder](Checkers/tree/master/Test%20files) folder contains some of these.
 
 ### Deliverable and Demonstration
 Our deliverable is a fully interactive game of Checkers played in the Racket REPL. The game does not have an AI, but is designed to be played by two users in alternating turns. At the live demo we will demonstrate playing the game, as well as saving and loading various instances of the game.
