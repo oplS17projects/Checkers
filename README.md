@@ -8,22 +8,25 @@ We were interested in making something with a graphical representation that woul
 Our hope is that through this project we will learn how to make a dynamic, interactive system using the functional programming perspective required by Racket.
 
 ### Analysis
-Concepts from class that will be used in the project:
+Concepts from class used in the project:
 
-- Recursion: 
-We will use recursion in part to process that data given by the XML files and generate the list of tile objects. Checking the validity of moves will also require recursing through the tiles of the board.
+Recursion:
+- Constructing the game board is a recursive process, since the board is a two dimentional list (a list of 8 rows, which are each lists of 8 tile objects). Because of its structure as a list, recursion is used a lot to loop through the board, such as when accessing an individual tile in order to check its state.
+- All uses of mapping/filtering/folding are inherently recursive operations.
+- Capturing pieces is a recursive process. Once a capture is made, the tile that was landed on becomes the new starting tile from which to make another capture if possible. The capture function makes the capture by changing the pieces on the necessary tiles, then checks if another capture can be made from the new location and if so calls the capture function again.
 
-- Map/filter/reduce: 
-Will likely need to filter the game board (i.e. list of tile objects) for ones containing the player’s pieces, etc.
+Map/filter/reduce: 
+- Reduce (foldr) is used most notably to create the image of the game board. Using `empty-image` as the base, the image of a row is created by folding a list of squares using the `beside` function. Then, the whole board is drawn by folding a list of such row images using the `above` function.
+- Map is used in two main ways. First, it is used to apply image-generating functions to objects in the game board, such as in `(map square-to-image r)` for a given row `r` of tile objects. This creates the list of squares which may or may not have a black or red circle drawn over them depending on whether the corresponding tile object indicated it had that color piece on it, and this list is used in the fold operation described in the bullet above. Second, it is used to display all items in a list to the user in some format. In these cases it is used mainly for the side effect of calling the mapped function, and not for the resulting list.
+- Filter is the most used of the higher order list operations in our code. There are many areas where the game board needed to be filtered for tiles meeting specific criteria, such as for finding all the tiles that are diagonal to a specific tile, and then further filtering the result to only those tiles that have opponent pieces on them.
 
-- Object Orientation: 
-We will use object orientation for the internal representation of the game. The individual tiles of the checkerboard will be represented as objects that contain their position and state data. The board itself will also be an object, containing the list of tiles as well as other information (pieces remaining on each side, etc.).
+Object Orientation: 
+- Every one of the 64 tiles that make up the board is an object, constructed with a given row number, column number, piece color (or none), and boolean indicating whether the piece is a king or not. The board is a list of the `dispatch` procedures of these objects. The dispatch procedure accepts getters for each parameter of the object, and setters for all except the row and column numbers.
 
-- State Modification: 
-State modification will be used within the tile and board objects. The status of each tile (empty/occupied, piece color, etc) will be changed via state modification when players move pieces and the state of certain components of the board, such as the number of pieces each player has, will change as well.
+State Modification: 
+- State modification is only used within the tile objects and only for the `piece` and `is-king` parameters, the values of which change as the player moves pieces around the board, or are set when the user loads a game state from a file.
 
-- Expression Evaluator: 
-As user input comes from the keyboard, we will need to build an expression evaluator to parse the user's input. It will need to identify the command (save/load/move) and its arguments from the user’s input expression. So the user could input something like (move (B6 C5)) and the code will need to extract the two tile locations and check if the user whose turn it is has a piece on B6 and that it can legally move to C5.
+Expression Evaluator: 
 
 ### External Technologies
 We will use Open XML format files (.xlsx file, the format that MS Excel saves spreadsheets in) to store data about the state of the game board. The simple-xlsx library will be used to get information in and out of these files.
