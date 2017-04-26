@@ -5,7 +5,7 @@ The project is an interactive, two player game of checkers.
 
 We were interested in making something with a graphical representation that would update dynamically as its internal state changed. While trying to decide how to add interactivity to this idea, we decided upon making a Checkers game. In this context the board is the graphic that changes in response to state, which in turn changes in response to user input.
 
-Our hope is that through this project we will learn how to make a dynamic, interactive system using the functional programming perspective required by Racket.
+Our goal in this project is to learn how to make a dynamic, interactive system using the functional programming perspective required by Racket.
 
 ### Analysis
 Concepts from class used in the project:
@@ -29,16 +29,16 @@ State Modification:
 Expression Evaluator: 
 
 ### External Technologies
-We will use Open XML format files (.xlsx file, the format that MS Excel saves spreadsheets in) to store data about the state of the game board. The simple-xlsx library will be used to get information in and out of these files.
+We are using Open XML format files (.xlsx file, the format that MS Excel saves spreadsheets in) to store data about the state of the game board. The simple-xlsx library is what we used to get information in and out of these files.
 
 ### Data Sets or other Source Materials
-We will not need to make use of data from any external source. We will, however, be creating some of our own data sets to test our program with. Specifically, we will create .xlsx files with data representing sample game configurations and make sure our program can properly parse and incorporate the data.
+We do not need to make use of data from any external source. We have, however, created some of our own data sets to test our program with. Specifically, we created .xlsx files with data representing sample game configurations to make sure our program properly parses and incorporates the data. The (./Test files) folder contains some of these.
 
 ### Deliverable and Demonstration
-The ultimate goal is to create a fully interactive game of Checkers. The game will not have an AI, but will be designed to be played by two users in alternating turns. At the live demo we will demonstrate playing the game. We will also be able to demonstrate saving and loading various instances of the game.
+Our deliverable is a fully interactive game of Checkers played in the Racket REPL. The game does not have an AI, but is designed to be played by two users in alternating turns. At the live demo we will demonstrate playing the game, as well as saving and loading various instances of the game.
 
 ### Evaluation of Results
-The ability to save and load game states is not only convenient for users but is also a perfect mechanism for testing that the program is working properly since it provides the ability to essentially print out (in a file) the internal state of the board. This makes it easy to check that the program does as expected after each user input. The state written to the file should also match up with the visual of the board within DrRacket. As long as these elements consistently match up, we will know that the program works correctly.
+The ability to save and load game states is not only convenient for users but is also a perfect mechanism for testing that the program is working properly since it provides the ability to essentially print out (in a file) the internal state of the board. This makes it easy to check that the program does as expected after each user input. The state contained in the file must match up with the visual of the board within DrRacket and the options available to the player on that turn. As long as these elements consistently match up, we know that the program works correctly.
 
 ## Architecture Diagram
 ![Diagram](/fp4-architecture-diagram.png?raw=true)
@@ -62,15 +62,19 @@ The basic mechanics for piece movement and piece capture will be implemented.
 ### Public Presentation
 Score keeping and the “king" pieces will be implemented. Game will end when one player has no pieces remaining.
 
-## Group Responsibilities
+## Group Member Contributions
 
 ### Alexander Pilozzi @PRXela
 - Inputting and exporting data to xlsx file
 - Interpreting user input
 
 ### Michael Bertucci @mbertucci1
-- Representing the game board object and drawing it on screen
-- Representing tile objects and maintaining/updating their states based on user moves
+- All functions related to drawing images of the board/tiles/pieces and row/column labels
+- Implementation of tile objects and their interface through the `dispatch` function
+- Implementation of the board as a 8x8 list of the tile objects
+- Logic for advanced capture mechanics (recursive capturing, detecting available captures, forced capturing)
 
-### Both Responsible For
-- Implementing the rules of the game and making sure user input and resulting changes in state are in accordance with the rules
+### Both Contributed To
+- Making minor adjustments/additions to some parts of each other's code where appropriate
+- Collaborating to ensure that user input and resulting changes in state are in accordance with the rules of the game
+- Making sure the game loop handled alternating turns properly (e.g. if player entered an invalid move he can re-take his turn, loading a game set turn to the player whose turn it was when the game was saved, etc.)
