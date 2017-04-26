@@ -18,16 +18,16 @@
         ((equal? (tile1 'get-piece) 'red)
          (cond ((equal? (tile2 'get-piece) 'none)
                 (begin
+                  ((tile2 'set-piece) 'red (or (tile1 'king?) (= (tile2 'get-row) 1))) ;if red piece reached top row make it a king
                   ((tile1 'set-piece) 'none)
-                  ((tile2 'set-piece) 'red)
                   'piece-moved))
                ((equal? (tile2 'get-piece) 'black) (capture tile1 tile2))
                (else (displayln "Illegal move: destination occupied") 'illegal-move)))
         ((equal? (tile1 'get-piece) 'black)
          (cond ((equal? (tile2 'get-piece) 'none)
                 (begin
+                  ((tile2 'set-piece) 'black (or (tile1 'king?) (= (tile2 'get-row) max-row))) ;;if black piece reached bottow row make it a king
                   ((tile1 'set-piece) 'none)
-                  ((tile2 'set-piece) 'black)
                   'piece-moved))
                ((equal? (tile2 'get-piece) 'red) (capture tile1 tile2))
                (else (displayln "Illegal move: destination occupied") 'illegal-move)))
@@ -39,16 +39,22 @@
         ((equal? (tile3 'get-piece) 'none)
          (cond ((equal? (tile1 'get-piece) 'red)
                 (begin
+                  ((tile3 'set-piece) 'red (tile1 'king?))
                   ((tile1 'set-piece) 'none)
                   ((tile2 'set-piece) 'none)
-                  ((tile3 'set-piece) 'red)
-                  (continue-capture tile3)))
+                  (if (and (= (tile3 'get-row) 1) (not (tile3 'king?))) ;if piece reached top row and not already a king, make it a king and stop there
+                      (begin ((tile3 'set-king) #t)
+                             'capture-done)
+                      (continue-capture tile3))))
                ((equal? (tile1 'get-piece) 'black)
                 (begin
+                  ((tile3 'set-piece) 'black (tile1 'king?))
                   ((tile1 'set-piece) 'none)
                   ((tile2 'set-piece) 'none)
-                  ((tile3 'set-piece) 'black)
-                  (continue-capture tile3)))
+                  (if (and (= (tile3 'get-row) max-row) (not (tile3 'king?))) ;if piece reached bottom row and not already a king, make it a king and stop there
+                      (begin ((tile3 'set-king) #t)
+                             'capture-done)
+                      (continue-capture tile3))))
                (else "no piece at start -- capture")))
         (else "destination is occupied -- capture")))
 
@@ -136,12 +142,12 @@
 ;; Restricts the results of capture-options based on how the piece on the tile
 ;; is allowed to move.
 (define (capturable-tiles tile)
-  (cond ;((tile 'king?) (capture-options tile))
-    ((equal? (tile 'get-piece) 'red)
-     (filter (lambda (t) (< (t 'get-row) (tile 'get-row))) (capture-options tile))) ;only tiles in row above
-    ((equal? (tile 'get-piece) 'black)
-     (filter (lambda (t) (> (t 'get-row) (tile 'get-row))) (capture-options tile))) ;only tiles in row below
-    (else '())))
+  (cond ((tile 'king?) (capture-options tile))
+        ((equal? (tile 'get-piece) 'red)
+         (filter (lambda (t) (< (t 'get-row) (tile 'get-row))) (capture-options tile))) ;only tiles in row above
+        ((equal? (tile 'get-piece) 'black)
+         (filter (lambda (t) (> (t 'get-row) (tile 'get-row))) (capture-options tile))) ;only tiles in row below
+        (else '())))
 
 (define (get-black-pieces)
   (define (get-black-pieces-recurse row)
