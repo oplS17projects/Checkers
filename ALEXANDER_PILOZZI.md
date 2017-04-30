@@ -4,12 +4,12 @@
 ### April 30, 2017
 
 # Overview
-	The project implemented via the code is a game of checkers which behaves according to the standard US ruleset (forced capture, king pieces, etc.). The game is designed for two players
+The project implemented via the code is a game of checkers which behaves according to the standard US ruleset (forced capture, king pieces, etc.). The game is designed for two players
 and is played entirely within the Racket REPL. Users enter the game loop via ```(start)```, and players can enter a variety of commands to conduct their desired action; as commands are made,
 commands are processed and the appropriate procedure required to make the proper board modifications or access other fearless is called. The loop exchanges turns when a valid move is made until
 one player is out of pieces, indicating that the other has won.
 
-	The project consists of four components: XML data processing, the command loop, movement mechanics and the board itself. I was primarily responsible for the command loop and entirely
+The project consists of four components: XML data processing, the command loop, movement mechanics and the board itself. I was primarily responsible for the command loop and entirely
 responsible for the XML data processing components, though I did establish some of the more basic movement mechanisms.
 
 # Libraries used
@@ -218,7 +218,7 @@ The following procedures allow the game to be loaded from an XML file, using the
         (else (error "invalid data -- get-tile"))))
 ```
 
-The ```get-bored-from-xlsx```procedure first generates an empty list called tiles, which is modified within the ```with-input-from-xlsx-file``` procedure. This is done as ```with-input-from-xlsx-file``` does
+The ```get-board-from-xlsx```procedure first generates an empty list called tiles, which is modified within the ```with-input-from-xlsx-file``` procedure. This is done as ```with-input-from-xlsx-file``` does
 not allow a value to be returned by the lambda, so an external definition and set! must be used to recover the grid. As accessing cells of the XML file is done through characters, some conversion between
 characters an integers had to be performed, though those specific functions are not shown here. The procedure then calls the ```get-sheet-row``` function, which is responsible for building a list
 for a single row. The ```get-sheet-row``` function, in turn, calls the ```get-tile``` function, which reads the string contained in a particular cell and outputs a cons cell with the appropriate
