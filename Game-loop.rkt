@@ -7,13 +7,19 @@
 ;player 1 = black pieces
 ;player 2 = red pieces
 
+;Use (start) to start the game
+
+;Current commands:
 ;Current commands:
 ;(exit) -> exits game
-;(move (# #) (# #)) -> moves piece from first coordinate to second coordinate.
-;currently allows for non-adjacent movement
 ;(move (# #) [direction]) -> moves piece from coordinate in the desired direction)
 ;(default-board) -> reverts board to default state
 ;(score) -> displays # of pieces remaining for each player
+;(save) -> saves to checkers.xlsx
+;(save [filename]) -> saves to a file with the desired name
+;(load) -> loads from checkers.xlsx
+;(load [filename]) -> loads from specified file
+
 (define (declare-turn player)
   (if (= player 1) (begin
                      (display "It is player 1's turn!")
@@ -91,22 +97,22 @@
                                  (display "Commands must be given in list form")
                                  (newline)
                                  'failed))
-        ((equal? (car command) 'exit) 'exit)
-        ((equal? (car command) 'default-board) (begin
+        ((equal? (tag command) 'exit) 'exit)
+        ((equal? (tag command) 'default-board) (begin
                                                 (revert-to-default)
                                                 'reset))
-        ((equal? (car command) 'load) (begin
+        ((equal? (tag command) 'load) (begin
                                         (if (and (> (length command) 1) (string? (name command)))
                                             (update-from-file (string-append (name command) ".xlsx"))
                                             (update-from-file))))
-        ((equal? (car command) 'move) (let ((result (move-command (cdr command) color)))
+        ((equal? (tag command) 'move) (let ((result (move-command (move-parameters  command) color)))
                                         (cond ((equal? result 'illegal-move) 'failed)
                                               ((equal? result 'capture-done) (check-winner))
                                               (else result))))
-        ((equal? (car command) 'score) (begin
+        ((equal? (tag command) 'score) (begin
                                          (display-score)
                                          'failed))
-        ((equal? (car command) 'save) (begin
+        ((equal? (tag command) 'save) (begin
                                         (if (and (> (length command) 1) (string? (name command)))
                                             (save-data color (string-append (name command) ".xlsx"))
                                             (save-data color))
@@ -123,22 +129,35 @@
            (newline)
            'failed))
         ((not (valid-start-coord? (start-coord command) color))
-         (begin
-           (display "You do not have a piece on that square!")
-           (newline)
-           'failed))         
-        ((coordinate? (cadr command))
-         (if (valid-dest-coord? (start-coord command) (end-coord command))
-             (move-piece (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
-                         (get-square (y-coord (end-coord command))(x-coord (end-coord command)) board))
-             'failed))
+         (if (not (coordinate? (start-coord command)))
+             (begin
+               (display "You must enter a valid coordinate")
+               (newline)
+               'failed)
+             (begin
+               (display "You do not have a piece on that square!")
+               (newline)
+               'failed)))        
         (else (if (valid-move-direction? (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
                                          (direction command))
                   (move-in-direction (get-square (y-coord (start-coord command))(x-coord (start-coord command)) board)
                                      (direction command))
-                  (begin (display "You cannot move in that direction! ")
-                         (newline)
-                         'failed)))))
+                  (cond ((coordinate? (direction command))
+                         (begin (display "You must enter a direction (e.g (move ([#] [#]) [direction]))")
+                                (newline)
+                                'failed))
+                         ((not(valid-direction? (direction command)))
+                          (begin (display "You must enter a valid direction (e.g northeast, southwest, etc.)")
+                                 (newline)
+                                 'failed))
+                         (else (begin (display "You cannot move in that direction")
+                                      (newline)
+                                      'failed)))))))
+  (define (tag lst) (car lst))
+
+(define (move-parameters lst) (cdr lst))
+
+(define (destination lst) (cadr lst))
 
 (define (start-coord lst) (car lst))
 
@@ -150,7 +169,11 @@
         x
         (- (convert-to-integer x) 64))))
 
-(define (y-coord lst) (cadr lst))
+(define (y-coord lst)
+  (let ((y (cadr lst)))
+    (if (integer? y)
+        y
+        (- (convert-to-integer y) 64))))
 
 (define (name lst) (cadr lst))
 
@@ -158,16 +181,15 @@
 
 (define (move-to lst) (cadr lst))
 
-(define (coordinate? lst) (pair? lst))
+(define (coordinate? lst) (and (pair? lst) (= (length lst) 2))) 
 
 (define (valid-start-coord? coord color)
-  (equal? color ((get-square (y-coord coord)(x-coord coord) board) 'get-piece)))
-
-(define (valid-dest-coord? start destination)
-  #t);stub
+  (and (coordinate? coord)
+       (procedure? (get-square (y-coord coord)(x-coord coord) board))
+       (equal? color ((get-square (y-coord coord)(x-coord coord) board) 'get-piece))))
 
 (define (symbol->char sym)
-  (string-ref (symbol->string sym) 0))
+  (char-upcase (string-ref (symbol->string sym) 0)))
 
 (define (convert-to-integer sym)
   (char->integer (symbol->char sym)))
