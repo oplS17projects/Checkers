@@ -29,14 +29,14 @@
 ;; Default board state
 (define default-board
   '(((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
-  ((black normal) (none) (black normal) (none) (black normal) (none) (black normal) (none))
-  ((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
-  ((none) (none) (none) (none) (none) (none) (none) (none))
-  ((none) (none) (none) (none) (none) (none) (none) (none))
-  ((red normal) (none) (red normal) (none) (red normal) (none) (red normal) (none))
-  ((none) (red normal) (none) (red normal) (none) (red normal) (none) (red normal))
-  ((red normal) (none) (red normal) (none) (red normal) (none) (red normal) (none))
-  ((p1) () () () () () () ())))
+    ((black normal) (none) (black normal) (none) (black normal) (none) (black normal) (none))
+    ((none) (black normal) (none) (black normal) (none) (black normal) (none) (black normal))
+    ((none) (none) (none) (none) (none) (none) (none) (none))
+    ((none) (none) (none) (none) (none) (none) (none) (none))
+    ((red normal) (none) (red normal) (none) (red normal) (none) (red normal) (none))
+    ((none) (red normal) (none) (red normal) (none) (red normal) (none) (red normal))
+    ((red normal) (none) (red normal) (none) (red normal) (none) (red normal) (none))
+    ((p1) () () () () () () ())))
 
 
 ;; Increments a character, used for looping through rows and columns of the xml file.
@@ -88,7 +88,7 @@
         (cond ((> (- ( char->integer row) 48) 9) lst)
               ((equal? lst '()) (loop-through-board (incrementCharacter row) column (list (get-sheet-row row column board-data))))
               (else (loop-through-board (incrementCharacter row) column (append lst (list (get-sheet-row row column board-data)))))))
-        (set! tiles (loop-through-board #\1 #\A '()))))
+      (set! tiles (loop-through-board #\1 #\A '()))))
       
   tiles)
 
@@ -120,19 +120,21 @@
                   (loop-through-grid row (+ 1 column) grid)))))
   (loop-through-grid 0 0 grid))                        
 
-(define (get-column column grid) ;; Outputs a list containing the data of a given column
+;; Outputs a list containing the data of a given column
+(define (get-column column grid) 
   (define (nth-element n)
     (define (nth-element-iter count proc)
-     (if (= count 0) proc
-         (nth-element-iter (- count 1) (lambda (n) (proc (cdr n))))))
+      (if (= count 0) proc
+          (nth-element-iter (- count 1) (lambda (n) (proc (cdr n))))))
     (nth-element-iter n car))
   (map (nth-element column) (filter (lambda (n) (> (length n) column)) grid)))
 
-(define (generate-export-grid color) ;; Used to convert board information into a grid of strings for export.
+;; Used to convert board information into a grid of strings for export.
+(define (generate-export-grid color) 
   (define (loop-through row column lst)
     (cond ((= row max-row) (if (equal? color 'black)
-                           (append lst (list '("p1" "" "" "" "" "" "" "")))
-                           (append lst (list'("p2" "" "" "" "" "" "" "")))))
+                               (append lst (list '("p1" "" "" "" "" "" "" "")))
+                               (append lst (list'("p2" "" "" "" "" "" "" "")))))
           ((= column max-column) (cons  lst (loop-through (+ row 1) 0 '())))
           (else (begin
                   (cond ((equal? ((get-square (+ row 1) (+ column 1) board) 'get-piece) 'none)
@@ -147,23 +149,11 @@
                              (loop-through row (+ 1 column) (append lst (list "R n"))))))))))
   (loop-through 0 0 '()))
 
-(define (save-data color [file file-name]) ;; Saves the state of the board to a file with the desired name or the default name
+;; Saves the state of the board to a file with the desired name or the default name
+(define (save-data color [file file-name])
   (let ((save (new xlsx%)))
-  (send save add-data-sheet
-        #:sheet_name sheet-name
-        #:sheet_data (generate-export-grid color))
-  (write-xlsx-file save file)))
+    (send save add-data-sheet
+          #:sheet_name sheet-name
+          #:sheet_data (generate-export-grid color))
+    (write-xlsx-file save file)))
                         
-
-
-
-;(define (get-board-from-xlsx file sheet) ;; gets data in list form.
-;  (with-input-from-xlsx-file file
-;    (lambda (board-data)
-;      (load-sheet sheet board-data)
-;      (define (loop-through-board row column)
-;        (cond ((> (- ( char->integer row) 48) 8) '())
-;              ((> (- (char->integer column) 64) 8) (loop-through-board (incrementCharacter row) #\A))
-;              (else (cons (get-tile row column board-data)
-;                          (loop-through-board row (incrementCharacter column))))))
-;              (set! tiles (loop-through-board #\1 #\A)))))
