@@ -20,6 +20,7 @@
 ;(load) -> loads from checkers.xlsx
 ;(load [filename]) -> loads from specified file
 
+; Displays a message based on the whose turn it is
 (define (declare-turn player)
   (if (= player 1) (begin
                      (display "It is player 1's turn!")
@@ -28,6 +29,7 @@
         (display "It is player 2's turn!")
         (newline))))
 
+; Procedures for prompting and accepting user input, output is used to determine who goes next
 (define (player1-turn)
   (begin
     (display-board)
@@ -76,6 +78,7 @@
 (define (start) (begin (revert-to-default)
                        (game-loop 'p1)))
 
+;; Main function of game loop
 (define (game-loop turn)
   (if (equal? turn 'exit)
       (display "exiting game")
@@ -83,15 +86,18 @@
                                                  (player1-turn)
                                                  (player2-turn))))))
 
+;; Determines whose turn is next based on the output of the previous turn
 (define (figure-out-next-turn this-turn turn-result)
   (cond ((equal? turn-result 'exit) turn-result)
         ((equal? turn-result 'reset) 'p1)
         (else turn-result)))
 
+;; Function for displaying the board
 (define (display-board)
   (display (draw-board))
   (newline))
 
+;; Main command evaluator, determines procedure to call based on the tag of the user-inputted list
 (define (process-command command color)
   (cond ((not (pair? command)) (begin
                                  (display "Commands must be given in list form")
@@ -122,6 +128,7 @@
                 'failed))))
        
 
+;; Main procedure for processing movement commands
 (define (move-command command color)
   (cond ((or (equal? '() command) (< (length command) 2))
          (begin
@@ -153,7 +160,8 @@
                          (else (begin (display "You cannot move in that direction")
                                       (newline)
                                       'failed)))))))
-  (define (tag lst) (car lst))
+;; Accessors
+(define (tag lst) (car lst))
 
 (define (move-parameters lst) (cdr lst))
 
@@ -181,19 +189,23 @@
 
 (define (move-to lst) (cadr lst))
 
-(define (coordinate? lst) (and (pair? lst) (= (length lst) 2))) 
+(define (coordinate? lst) (and (pair? lst) (= (length lst) 2)))
 
+;; Validates the start-coordinate of a movement command
 (define (valid-start-coord? coord color)
   (and (coordinate? coord)
        (procedure? (get-square (y-coord coord)(x-coord coord) board))
        (equal? color ((get-square (y-coord coord)(x-coord coord) board) 'get-piece))))
 
+;; Converts a symbol to an uppercase character in case the user inputs coordinates as symbols rather than integers
 (define (symbol->char sym)
   (char-upcase (string-ref (symbol->string sym) 0)))
 
+;; Converts characters to the appropriate integer
 (define (convert-to-integer sym)
   (char->integer (symbol->char sym)))
 
+;; Validates the user inputted direction based on the tile type at the start coordinate
 (define (valid-move-direction? tile direction)
   (cond ((tile 'king?) (or (equal? direction 'northeast)
                            (equal? direction 'northwest)
@@ -206,6 +218,7 @@
          (or (equal? direction 'southeast)
              (equal? direction 'southwest)))))
 
+;; Validates the user inputted direction as being of the desired form
 (define (valid-direction? direction)
   (or
    (equal? direction 'northeast)
@@ -214,12 +227,15 @@
    (equal? direction 'southwest)
    ))
 
+;; Gets the number of pieces player 1 has remaining
 (define (get-P1-pieces)
   (length (get-black-pieces)))
 
+;; Gets the number of pieces player2 has remaining
 (define (get-P2-pieces)
   (length (get-red-pieces)))
 
+;; Displays the score during the game
 (define (display-score)
   (begin
   (display "player 1 pieces remaining: ")
@@ -229,6 +245,7 @@
   (display (get-P2-pieces))
   (newline)))
 
+;; Checks to see if a move was a winning move and, if so, displays the appropriate message and exits the game
 (define (check-winner) (cond ((= (get-P1-pieces) 0)
                               (begin (display-board)
                                      (newline)
