@@ -237,5 +237,5 @@ A function is then responsible for updating the state of the board:
   (loop-through-grid 0 0 grid))      
 ```
 The ```update-board-from-grid`` function reads through each element in the grid row by row and updates each tile based on the information contained within the cons cell. In this manner,
-the state of the board is restored to that of the XML file. The data in the singleton list that details the turn is the output of the function, as the update-tile procedure itself
-operates through state-modification using the existing message-passing system, which is interpreted by the command evaluator as detailed above, allowing the game to resume.
+the state of the board is restored to that of the XML file. The data in the singleton list that details the turn is the output of the function (the update-tile procedure itself
+operates through state-modification using the existing message-passing system) which is interpreted by the command evaluator as detailed above, allowing the game to resume.
