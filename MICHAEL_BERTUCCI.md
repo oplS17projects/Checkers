@@ -171,7 +171,7 @@ As a side note, these functions also demonstrate significant use of the `filter`
                 (get-board-element (+ (tile 'get-row) 1) (- (tile 'get-column) 1)))))
 ```
 
-Now that `find-adjacent-opponents` has provided the list of tiles adjacent to our tile of interest that have opponent pieces on them, the next step carried out by `capture-options` is to take that result and perform another filter. For each tile `t` in the list, the filter predicate takes `t` and the tile of interest `tile`, identifies the third tile that the piece on `tile` would land on if it captured the piece on `t`, and returns true only if that third tile has no piece on it. Otherwise, that tile is obviously not an option for capture because the jump destination is occupied.
+Now that `find-adjacent-opponents` has provided the list of tiles adjacent to our tile of interest that have opponent pieces on them, the next step carried out by `capture-options` is to take that result and perform another filter. For each tile `t` in the list, the filter predicate takes `t` and the tile of interest `tile`, identifies the third tile that the piece on `tile` would land on if it captured the piece on `t`, and returns true only if that third tile has no piece on it. Otherwise, `t` is obviously not an option for capture because the jump destination is occupied.
 
 ```               
 (define (capture-options tile)
